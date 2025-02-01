@@ -40,6 +40,11 @@ android {
 }
 
 dependencies {
+    //Dependencias para usar a camera
+    implementation("androidx.camera:camera-core:1.0.2")
+    implementation("androidx.camera:camera-camera2:1.0.2")
+    implementation("androidx.camera:camera-lifecycle:1.0.2")
+    implementation("androidx.camera:camera-view:1.0.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
