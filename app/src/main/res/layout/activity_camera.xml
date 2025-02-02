@@ -8,15 +8,18 @@
     tools:context=".CameraActivity">
 
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnTake"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Capturar"
-        app:layout_constraintBottom_toBottomOf="@+id/preview_view"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:maxImageSize="40dp"
+        app:backgroundTint="@color/green_200"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <androidx.camera.view.PreviewView
         android:id="@+id/preview_view"
