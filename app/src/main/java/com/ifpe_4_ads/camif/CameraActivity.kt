@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
@@ -23,7 +24,7 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class CameraActivity : AppCompatActivity() {
+class CameraActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityCameraBinding
 
     private lateinit var cameraProvider: ProcessCameraProvider
@@ -50,16 +51,26 @@ class CameraActivity : AppCompatActivity() {
             requestPermissions()
         }
 
-        binding.btnTake.setOnClickListener {
-            takePhoto()
-        }
-        binding.btnSwapCamera.setOnClickListener {
-            flipCamera()
-        }
-        binding.btnTurnFlashOnOff.setOnClickListener {
-            turnFlashOnOff()
-        }
+        binding.btnTake.setOnClickListener(this)
+        binding.btnSwapCamera.setOnClickListener(this)
+        binding.btnTurnFlashOnOff.setOnClickListener(this)
 
+    }
+
+    override fun onClick(view: View) {
+        when (view.id) {
+            R.id.btnTake -> {
+                takePhoto()
+            }
+
+            R.id.btn_swap_camera -> {
+                flipCamera()
+            }
+
+            R.id.btn_turn_flashOnOff -> {
+                turnFlashOnOff()
+            }
+        }
     }
 
     private fun getOutputDirectory(): File {
@@ -166,13 +177,18 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(this, "Permissões não concedidas pelo usuário.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Permissões não concedidas pelo usuário.", Toast.LENGTH_SHORT)
+                    .show()
                 finish()
             }
         }
@@ -191,4 +207,5 @@ class CameraActivity : AppCompatActivity() {
         super.onDestroy()
         cameraExecutor.shutdown()
     }
+
 }
