@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraExecutor
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -30,12 +31,14 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var outputDirectory: File
     private var imageCapture: ImageCapture?=null
     private lateinit var cameraExecutor: ExecutorService
+    private var lensFacing = CameraSelector.LENS_FACING_BACK
+    private lateinit var cameraSelector: CameraSelector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCameraBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
+        supportActionBar?.hide()
 
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -49,7 +52,20 @@ class CameraActivity : AppCompatActivity() {
         binding.btnTake.setOnClickListener {
             takePhoto()
         }
+        binding.btnSwapCamera.setOnClickListener {
+            flipCamera()
+        }
 
+
+    }
+
+    private fun flipCamera() {
+        lensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+            CameraSelector.LENS_FACING_BACK
+        } else {
+            CameraSelector.LENS_FACING_FRONT
+        }
+        bindPreview()
     }
 
     private fun getOutputDirectory(): File{
@@ -105,8 +121,19 @@ class CameraActivity : AppCompatActivity() {
             .setTargetRotation(binding.previewView.display.rotation)
             .build()
 
-        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+        cameraSelector = CameraSelector.Builder()
+            .requireLensFacing(lensFacing)
+            .build()
+
+        try {
+            cameraProvider.unbindAll()
+
+            cameraProvider.bindToLifecycle(
+                this, cameraSelector, preview, imageCapture
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun allPermissionsGranted(): Boolean {
