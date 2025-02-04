@@ -27,9 +27,10 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCameraBinding
 
     private lateinit var cameraProvider: ProcessCameraProvider
+    private lateinit var camera: Camera
     private lateinit var preview: Preview
     private lateinit var outputDirectory: File
-    private var imageCapture: ImageCapture?=null
+    private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
     private var lensFacing = CameraSelector.LENS_FACING_BACK
     private lateinit var cameraSelector: CameraSelector
@@ -55,40 +56,45 @@ class CameraActivity : AppCompatActivity() {
         binding.btnSwapCamera.setOnClickListener {
             flipCamera()
         }
-
-
-    }
-
-    private fun flipCamera() {
-        lensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
-            CameraSelector.LENS_FACING_BACK
-        } else {
-            CameraSelector.LENS_FACING_FRONT
+        binding.btnTurnFlashOnOff.setOnClickListener {
+            turnFlashOnOff()
         }
-        bindPreview()
+
     }
 
-    private fun getOutputDirectory(): File{
-        val mediaDir = externalMediaDirs.firstOrNull()?.let{mFile->
+    private fun getOutputDirectory(): File {
+        val mediaDir = externalMediaDirs.firstOrNull()?.let { mFile ->
             File(mFile, resources.getString(R.string.app_name)).apply {
                 mkdirs()
             }
         }
-        return if(mediaDir != null && mediaDir.exists())
+        return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
 
-    private fun takePhoto(){
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        cameraProviderFuture.addListener({
+            cameraProvider = cameraProviderFuture.get()
+            bindPreview()
+        }, ContextCompat.getMainExecutor(this))
+    }
+
+    private fun takePhoto() {
         val imageCapture = imageCapture ?: return
         val photoFile = File(
             outputDirectory,
-            SimpleDateFormat(Constants.FILE_NAME_FORMAT, Locale.getDefault()).format(System.currentTimeMillis())+".jpg")
+            SimpleDateFormat(
+                Constants.FILE_NAME_FORMAT,
+                Locale.getDefault()
+            ).format(System.currentTimeMillis()) + ".jpg"
+        )
 
         val outputOption = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
         imageCapture.takePicture(
             outputOption, ContextCompat.getMainExecutor(this),
-            object :ImageCapture.OnImageSavedCallback{
+            object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
 
 
@@ -105,12 +111,27 @@ class CameraActivity : AppCompatActivity() {
         )
     }
 
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener({
-            cameraProvider = cameraProviderFuture.get()
-            bindPreview()
-        }, ContextCompat.getMainExecutor(this))
+    private fun turnFlashOnOff() {
+        if (camera.cameraInfo.hasFlashUnit()) {
+            if (camera.cameraInfo.torchState.value == 0) {
+                camera.cameraControl.enableTorch(true)
+                binding.btnTurnFlashOnOff.setImageResource(R.drawable.baseline_flash_on_24)
+            } else {
+                camera.cameraControl.enableTorch(false)
+                binding.btnTurnFlashOnOff.setImageResource(R.drawable.baseline_flash_off_24)
+            }
+        } else {
+            Toast.makeText(this, "O dispositivo não possui Flash!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun flipCamera() {
+        lensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+            CameraSelector.LENS_FACING_BACK
+        } else {
+            CameraSelector.LENS_FACING_FRONT
+        }
+        bindPreview()
     }
 
     private fun bindPreview() {
@@ -128,7 +149,7 @@ class CameraActivity : AppCompatActivity() {
         try {
             cameraProvider.unbindAll()
 
-            cameraProvider.bindToLifecycle(
+            camera = cameraProvider.bindToLifecycle(
                 this, cameraSelector, preview, imageCapture
             )
         } catch (e: Exception) {
@@ -138,7 +159,22 @@ class CameraActivity : AppCompatActivity() {
 
     private fun allPermissionsGranted(): Boolean {
         return REQUIRED_PERMISSIONS.all { permission: String ->
-            ContextCompat.checkSelfPermission(baseContext, permission) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                baseContext,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera()
+            } else {
+                Toast.makeText(this, "Permissões não concedidas pelo usuário.", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
     }
 
