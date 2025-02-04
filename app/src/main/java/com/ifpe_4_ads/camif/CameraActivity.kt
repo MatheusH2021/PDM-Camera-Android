@@ -101,7 +101,9 @@ class CameraActivity : AppCompatActivity() {
         preview = Preview.Builder().build()
         preview.setSurfaceProvider(binding.previewView.surfaceProvider) // Usando o PreviewView
 
-        imageCapture = ImageCapture.Builder().build()
+        imageCapture = ImageCapture.Builder()
+            .setTargetRotation(binding.previewView.display.rotation)
+            .build()
 
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
