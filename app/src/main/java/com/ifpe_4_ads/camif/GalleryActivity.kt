@@ -36,10 +36,11 @@ class GalleryActivity : AppCompatActivity() {
 
             listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                 val intent = Intent(this, PhotoViewActivity::class.java).apply {
-                    putExtra("photoUri", photoFiles[position].absolutePath)
+                    putExtra("photoUri", Uri.fromFile(photoFiles[position]).toString())
                 }
                 startActivity(intent)
             }
+
         } else {
             Log.e("GalleryActivity", "Diretório nao encontrado ou não é um diretrio válido")
         }
