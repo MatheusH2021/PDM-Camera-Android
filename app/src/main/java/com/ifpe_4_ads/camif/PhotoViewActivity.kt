@@ -1,6 +1,7 @@
 package com.ifpe_4_ads.camif
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -8,6 +9,7 @@ import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +34,12 @@ class PhotoViewActivity : AppCompatActivity() {
             loadImage(imageView, photoUriString)
         } else {
             requestPermissions()
+        }
+        val buttonEdit: Button = findViewById(R.id.buttonEdit)
+        buttonEdit.setOnClickListener {
+            val editIntent = Intent(this, EditImageActivity::class.java)
+            editIntent.putExtra("photoUri", photoUriString)
+            startActivity(editIntent)
         }
     }
 

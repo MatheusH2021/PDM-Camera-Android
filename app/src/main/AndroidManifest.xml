@@ -21,6 +21,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CamIF"
         tools:targetApi="31">
+        <activity android:name=".EditImageActivity" />
+
         <activity
             android:name=".CameraActivity"
             android:screenOrientation="fullSensor"
