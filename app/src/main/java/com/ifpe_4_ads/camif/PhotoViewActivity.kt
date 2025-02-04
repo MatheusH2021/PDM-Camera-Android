@@ -2,7 +2,10 @@ package com.ifpe_4_ads.camif
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
@@ -10,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import java.io.IOException
 
 class PhotoViewActivity : AppCompatActivity() {
 
@@ -56,7 +60,8 @@ class PhotoViewActivity : AppCompatActivity() {
                 inputStream?.close()
 
                 if (bitmap != null) {
-                    imageView.setImageBitmap(bitmap)
+                    val rotatedBitmap = rotateImageIfRequired(bitmap, uri)
+                    imageView.setImageBitmap(rotatedBitmap)
                 } else {
                     Toast.makeText(this, "Erro ao carregar a imagem.", Toast.LENGTH_SHORT).show()
                 }
@@ -69,6 +74,34 @@ class PhotoViewActivity : AppCompatActivity() {
         }
     }
 
+    private fun rotateImageIfRequired(bitmap: Bitmap, uri: Uri): Bitmap {
+        return try {
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                val exif = ExifInterface(inputStream)
+                val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+                val rotationAngle = when (orientation) {
+                    ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                    ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                    ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                    ExifInterface.ORIENTATION_NORMAL -> 0
+                    ExifInterface.ORIENTATION_UNDEFINED -> 0
+                    else -> 0
+                }
+
+                if (rotationAngle != 0) {
+                    val matrix = Matrix()
+                    matrix.postRotate(rotationAngle.toFloat())
+                    Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                } else {
+                    bitmap
+                }
+            } ?: bitmap
+        } catch (e: IOException) {
+            e.printStackTrace()
+            bitmap
+        }
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
