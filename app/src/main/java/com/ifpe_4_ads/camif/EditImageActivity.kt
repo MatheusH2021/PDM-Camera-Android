@@ -6,27 +6,20 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.ifpe_4_ads.camif.databinding.ActivityEditImageBinding
 import java.io.InputStream
 
 class EditImageActivity : AppCompatActivity() {
 
-    private lateinit var imageView: ImageView
+    private lateinit var binding: ActivityEditImageBinding
     private var currentBitmap: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_image)
-
-        imageView = findViewById(R.id.imageViewEdit)
-        val buttonGrayScale: Button = findViewById(R.id.buttonGrayScale)
-        val buttonRotateRight: Button = findViewById(R.id.buttonRotateRight)
-        val buttonRotateLeft: Button = findViewById(R.id.buttonRotateLeft)
-        val buttonInvertColors: Button = findViewById(R.id.buttonInvertColors)
-        val buttonSaveImage: Button = findViewById(R.id.buttonSaveImage)
+        binding = ActivityEditImageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val photoUriString = intent.getStringExtra("photoUri")
         if (photoUriString != null) {
@@ -35,35 +28,35 @@ class EditImageActivity : AppCompatActivity() {
             Toast.makeText(this, "Imagem não encontrada", Toast.LENGTH_SHORT).show()
         }
 
-        buttonGrayScale.setOnClickListener {
+        binding.buttonGrayScale.setOnClickListener {
             currentBitmap?.let {
                 currentBitmap = applyGrayScale(it)
-                imageView.setImageBitmap(currentBitmap)
+                binding.imageViewEdit.setImageBitmap(currentBitmap)
             }
         }
 
-        buttonRotateRight.setOnClickListener {
+        binding.buttonRotateRight.setOnClickListener {
             currentBitmap?.let {
                 currentBitmap = rotateBitmap(it, 90f)
-                imageView.setImageBitmap(currentBitmap)
+                binding.imageViewEdit.setImageBitmap(currentBitmap)
             }
         }
 
-        buttonRotateLeft.setOnClickListener {
+        binding.buttonRotateLeft.setOnClickListener {
             currentBitmap?.let {
                 currentBitmap = rotateBitmap(it, -90f)
-                imageView.setImageBitmap(currentBitmap)
+                binding.imageViewEdit.setImageBitmap(currentBitmap)
             }
         }
 
-        buttonInvertColors.setOnClickListener {
+        binding.buttonInvertColors.setOnClickListener {
             currentBitmap?.let {
                 currentBitmap = applyInvertColors(it)
-                imageView.setImageBitmap(currentBitmap)
+                binding.imageViewEdit.setImageBitmap(currentBitmap)
             }
         }
 
-        buttonSaveImage.setOnClickListener {
+        binding.buttonSaveImage.setOnClickListener {
             currentBitmap?.let {
                 if (photoUriString != null) {
                     saveImage(it, Uri.parse(photoUriString))
@@ -73,13 +66,13 @@ class EditImageActivity : AppCompatActivity() {
     }
 
     private fun loadImage(uri: Uri) {
-            val inputStream: InputStream? = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            inputStream?.close()
-            if (bitmap != null) {
-                currentBitmap = bitmap
-                imageView.setImageBitmap(currentBitmap)
-            }
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream?.close()
+        if (bitmap != null) {
+            currentBitmap = bitmap
+            binding.imageViewEdit.setImageBitmap(currentBitmap)
+        }
     }
 
     private fun applyGrayScale(bitmap: Bitmap): Bitmap {
@@ -121,18 +114,18 @@ class EditImageActivity : AppCompatActivity() {
     }
 
     private fun saveImage(bitmap: Bitmap, uri: Uri) {
-            val outputStream = contentResolver.openOutputStream(uri)
-            if (outputStream != null) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream.flush()
-                outputStream.close()
-                Toast.makeText(this, "Imagem Salva.", Toast.LENGTH_LONG).show()
-                val intent = Intent(this, GalleryActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Erro ao acessar o arquivo para salvar.", Toast.LENGTH_SHORT).show()
-            }
+        val outputStream = contentResolver.openOutputStream(uri)
+        if (outputStream != null) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+            Toast.makeText(this, "Imagem Salva.", Toast.LENGTH_LONG).show()
+            val intent = Intent(this, GalleryActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+        } else {
+            Toast.makeText(this, "Erro ao acessar o arquivo para salvar.", Toast.LENGTH_SHORT).show()
+        }
     }
 }
