@@ -4,4 +4,5 @@
     <string name="list_button">Galeria</string>
     <string name="take_button">Capturar</string>
     <string name="title_image">Titulo Imagem</string>
+    <string name="image_description">Image</string>
 </resources>
