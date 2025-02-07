@@ -45,6 +45,9 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.0.2")
     implementation("androidx.camera:camera-video:1.4.1")
 
+    //Glide - Carrega as imagens de forma mais fluida
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
