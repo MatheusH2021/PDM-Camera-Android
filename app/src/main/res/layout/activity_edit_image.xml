@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/buttonContainer" />
+        app:layout_constraintBottom_toTopOf="@id/buttonContainer"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/buttonContainer"
@@ -27,50 +27,51 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
-            android:tint="@color/white"
             app:backgroundTint="@color/green_200"
+
             app:fabCustomSize="50dp"
-            app:srcCompat="@drawable/rotate_left" />
+            app:srcCompat="@drawable/rotate_left"
+            app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/buttonRotateRight"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
-            android:tint="@color/white"
             app:backgroundTint="@color/green_200"
             app:fabCustomSize="50dp"
-            app:srcCompat="@drawable/rotate_right" />
+            app:srcCompat="@drawable/rotate_right"
+            app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/buttonGrayScale"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
-            android:tint="@color/white"
             app:backgroundTint="@color/green_200"
             app:fabCustomSize="50dp"
-            app:srcCompat="@drawable/tonality" />
+            app:srcCompat="@drawable/tonality"
+            app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/buttonInvertColors"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
-            android:tint="@color/white"
             app:backgroundTint="@color/green_200"
             app:fabCustomSize="50dp"
-            app:srcCompat="@drawable/invert_colors" />
+            app:srcCompat="@drawable/invert_colors"
+            app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/buttonSaveImage"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
-            android:tint="@color/white"
             app:backgroundTint="@color/green_200"
             app:fabCustomSize="50dp"
-            app:srcCompat="@drawable/save" />
+            app:srcCompat="@drawable/save"
+            app:tint="@android:color/white" />
 
     </LinearLayout>
 
