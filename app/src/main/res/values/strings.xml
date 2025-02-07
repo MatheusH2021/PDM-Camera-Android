@@ -3,4 +3,5 @@
     <string name="title">CAM-IF</string>
     <string name="list_button">Galeria</string>
     <string name="take_button">Capturar</string>
+    <string name="title_image">Titulo Imagem</string>
 </resources>
