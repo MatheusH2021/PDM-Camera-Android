@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">CamIF</string>
     <string name="title">CAM-IF</string>
-    <string name="list_button">Imagens</string>
+    <string name="list_button">Galeria</string>
     <string name="take_button">Capturar</string>
 </resources>
